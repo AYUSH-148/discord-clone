@@ -12,7 +12,7 @@ model Profile {
   id        String    @id @default(uuid())
   userId    String    @unique
   name      String
-  imageUrl  String
+  imageUrl  String 
   email     String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -46,7 +46,12 @@ model Member {
   profile   Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
   server    Server     @relation(fields: [serverId], references: [id], onDelete: Cascade)
   messages  Message[]
+  directMessages DirectMessage[]
 
+  conversationsInitiated Conversation[] @relation("MemberOne")
+  conversationsReceieved Conversation[] @relation("MemberTwo")
+
+  
   @@index([profileId])
   @@index([serverId])
 }
@@ -93,4 +98,40 @@ enum ChannelType {
   TEXT
   AUDIO
   VIDEO
+}
+
+model Conversation{
+  id String @id @default(uuid())
+  
+  memberOneId String
+  memberOne Member @relation("MemberOne",fields:[memberOneId],references:[id],onDelete:Cascade)
+  
+  memberTwoId String
+  memberTwo Member @relation("MemberTwo",fields:[memberTwoId],references:[id],onDelete:Cascade)
+  @@index([memberOneId])
+  @@index([memberTwoId])
+
+  directMessages DirectMessage[]
+
+  @@unique([memberOneId,memberTwoId])
+
+}
+
+model DirectMessage{
+  id String @id @default(uuid())
+  content String @db.Text
+  fileUrl String @db.Text
+
+  memberId String
+  member Member @relation(fields: [memberId],references: [id],onDelete: Cascade)
+  
+  conversationId String
+  conversation Conversation @relation(fields: [conversationId], references: [id],onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deleted Boolean @default(false)
+
+  @@index([memberId])
+  @@index([conversationId])
 }
