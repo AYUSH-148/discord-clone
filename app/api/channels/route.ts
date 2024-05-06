@@ -8,6 +8,7 @@ import { isProfileDefined, isRequestSearchParamDefined } from '@/lib/utils';
 export async function POST(req: Request){
     try {
         const {name,type} = await req.json();
+        
         const {searchParams} = new URL(req.url);
         const profile = await currentProfile();
         const serverId = searchParams.get('serverId');

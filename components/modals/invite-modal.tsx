@@ -27,7 +27,6 @@ const InviteModal = () => {
     const [isLoading,setIsLoading] = useState(false);
 
     const isModalOpen = isOpen && type === 'invite';
-    console.log(isModalOpen);
 
     const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
     const onCopyInviteUrl = ()=>{

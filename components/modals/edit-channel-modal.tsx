@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
+import {  useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChannelType } from '@prisma/client';
 import axios from 'axios';
@@ -45,30 +45,30 @@ const formSchema = z.object({
         }),
     type: z.nativeEnum(ChannelType),
 })
-const CreateChannelModal = () => {
+const EditChannelModal = () => {
     const router = useRouter();
-    const params = useParams();
     const { isOpen, onClose, type,data } = useModal();
-    const isModalOpen = isOpen && type === 'createChannel';
-    const {channelType} = data ;
+    const isModalOpen = isOpen && type === 'editChannel';
+    const {channel,server} = data ;
     const form = useForm({
         resolver: zodResolver(formSchema),
-        defaultValues: { name: '', type: channelType || ChannelType.TEXT  },
+        // @ts-ignore
+        defaultValues: { name: '', type: channel?.type | ChannelType.TEXT  },
     })
    
     const isLoading = form.formState.isSubmitting;
    
     useEffect(()=>{
-        if(channelType ){
-            form.setValue("type",channelType);
-        }else{
-            form.setValue("type",ChannelType.TEXT)
-        }
-    },[channelType,form])
+      if(channel){
+        form.setValue("name",channel.name);
+        // @ts-ignore
+        form.setValue("type",channel.type);
+      }  
+    },[form,channel])
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const url = `/api/channels?serverId=${params.serverId}`;
-            await axios.post(url, values);
+            const url = `/api/channels/${channel?.id}?serverId=${server?.id}`;
+            await axios.patch(url, values);
             form.reset();
             router.refresh();
         } catch (error) {
@@ -84,10 +84,11 @@ const CreateChannelModal = () => {
             <DialogContent className="bg-white text-black p-0 overflow-hidden">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Create Channel
+                        Edit Channel
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
+                    {/*  @ts-ignore */}
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         <div className="space-y-8 px-6">
                             <FormField
@@ -121,6 +122,7 @@ const CreateChannelModal = () => {
                                         <Select
                                             disabled={isLoading}
                                             onValueChange={field.onChange}
+                                            // @ts-ignore
                                             defaultValue={field.value}
                                         >
                                             <FormControl>
@@ -147,7 +149,7 @@ const CreateChannelModal = () => {
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
                             <Button variant="primary" disabled={isLoading}>
-                                Create
+                                Edit
                             </Button>
                         </DialogFooter>
                     </form>
@@ -157,4 +159,4 @@ const CreateChannelModal = () => {
     )
 }
 
-export default CreateChannelModal
+export default EditChannelModal
