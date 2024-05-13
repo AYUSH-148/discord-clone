@@ -47,6 +47,7 @@ export async function DELETE(
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
+
 export async function PATCH(
     req:Request,
     {params}:{params:{channelId: string}}

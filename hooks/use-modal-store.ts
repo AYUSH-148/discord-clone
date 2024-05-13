@@ -10,12 +10,15 @@ export type ModalType =
   | 'members'
   | 'createChannel'
   | 'deleteChannel'
+  | 'messageFile'
   | 'leaveServer'; 
 
 interface IModalData {
   server?: Server;
   channelType?: ChannelType;
   channel?: Channel;
+  apiUrl?:string;
+  query?: Record<string,any>;
 }
 
 interface IModalStore {

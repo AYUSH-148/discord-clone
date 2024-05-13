@@ -21,7 +21,7 @@ const ServerMember = ({ member, server }: serverMemberProps) => {
     const icon = roleIconMap[member.role];
 
     const onClick = () => {
-        router.push(`/servers/${server.id}/conversations/${member.id}`)
+        router.push(`/servers/${server.id}/conversation/${member.id}`)
     }
     return (
         <button onClick={onClick} className={cn("group px-2 py-2 rounded-md flex items-center gap-x-2 w-full hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition mb-1"
