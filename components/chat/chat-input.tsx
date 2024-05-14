@@ -8,6 +8,10 @@ import { Form, FormControl, FormField, FormItem } from '../ui/form';
 import { Input } from '../ui/input';
 import { Plus, Smile } from 'lucide-react';
 import { useModal } from '@/hooks/use-modal-store';
+import EmojiPicker from '../emoji-picker';
+import { useRouter } from 'next/navigation';
+import qs from 'query-string';
+
 interface ChatInputprops {
     apiUrl: string;
     query: Record<string, any>;
@@ -25,12 +29,18 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputprops) => {
             content: "",
         }
     });
+    const router = useRouter();
     const {onOpen} = useModal();
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const url = `${apiUrl}?channelId=${query.channelId}&serverId=${query.serverId}`   
-            await axios.post(url,values)
+            const url = qs.stringifyUrl({
+                url:apiUrl,
+                query
+            })
+            await axios.post(url,values);
+            form.reset();
+            router.refresh();
         } catch (error) {
             console.log(error)
         }
@@ -52,7 +62,8 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputprops) => {
                                     <Input placeholder={`Message ${type === 'conversation' ? name : "#" + name}`} disabled={isLoading}
                                         className="px-14 py-6 bg-znic-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
                                         {...field} />
-                                    <div className='absolute top-7 right-8'><Smile /></div>
+                                    <div className='absolute top-7 right-8'><EmojiPicker onChange={(emoji:string)=> field.onChange(`${field.value} ${emoji}`)}/></div>
+                                
                                 </div>
                             </FormControl>
                         </FormItem>

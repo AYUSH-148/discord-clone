@@ -40,12 +40,6 @@ const MessaageFileModal = () => {
         defaultValues: {  fileUrl: '' },
     });
     const isLoading = form.formState.isSubmitting;
-    const handleClose = ()=>{
-        form.reset();
-        onClose();
-    }
-
-
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
@@ -56,11 +50,15 @@ const MessaageFileModal = () => {
 
             form.reset();
             router.refresh();
-            onClose();
+            handleClose();
         } catch (err) {
             console.log(err);
         }
     };
+    const handleClose = ()=>{
+        form.reset();
+        onClose();
+    }
 
 
     return (
